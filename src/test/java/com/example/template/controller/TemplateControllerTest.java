@@ -1,6 +1,6 @@
 package com.example.template.controller;
 
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -51,8 +51,26 @@ public class TemplateControllerTest {
 		template.setImmutableField("immutableField");
 		template.setCreatedAt(LocalDateTime.now());
 		template.setUpdatedAt(LocalDateTime.now());
+		doReturn(Mono.just(template)).when(templateService).save(any(Template.class));
 		doReturn(Mono.just(template)).when(templateService).get(eq("6e71d0d568e134c029203593b00a0103e7cdf30b"));
 		doThrow(new NotFoundException("unexisting_template")).when(templateService).get(eq("unexisting_template"));
+	}
+
+	@Test
+	public void shouldCreateTemplate() throws Exception {
+		String request = JsonHelper.getRequestFileAsString("template/create_template_success.json");
+		String response = JsonHelper.getResponseFileAsString("template/create_template_success.json");
+
+		webClient.post().uri("/templates")
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.accept(MediaType.APPLICATION_JSON_UTF8)
+				.body(Mono.just(request), String.class)
+				.exchange()
+				.expectStatus().isCreated()
+				.expectBody()
+				.json(response);
+
+		verify(templateService, times(1)).save(any(Template.class));
 	}
 
 	@Test

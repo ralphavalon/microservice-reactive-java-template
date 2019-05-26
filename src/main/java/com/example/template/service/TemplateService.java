@@ -14,6 +14,10 @@ public class TemplateService {
 	
 	@Autowired
 	private TemplateRepository templateRepository;
+
+	public Mono<Template> save(Template template) {
+		return templateRepository.save(template);
+	}
 	
 	public Mono<Template> get(String templateId) {
 		return templateRepository.findById(templateId)

@@ -1,6 +1,6 @@
 package com.example.template.service;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -29,6 +29,16 @@ public class TemplateServiceTest {
 
 	@Autowired
 	private TemplateService templateService;
+	
+	@Test
+	public void shouldSaveTemplate() {
+		StepVerifier
+			.create(templateService.save(new Template()))
+			.expectNextCount(1L)
+			.expectComplete();
+		
+		verify(templateRepository, times(1)).save(any(Template.class));
+	}
 
 	@Test
 	public void shouldGetOneTemplate() throws Exception {
